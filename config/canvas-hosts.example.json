@@ -1,0 +1,12 @@
+{
+  "hosts": [
+    "https://youruniversity.instructure.com",
+    "https://canvas.yourdomain.edu"
+  ],
+  "settings": {
+    "syncFrequency": "hourly",
+    "maxConcurrentFetches": 6,
+    "maxConcurrentGhostTabs": 2,
+    "fileExtraction": "metadata-only"
+  }
+}

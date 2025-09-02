@@ -1,0 +1,12 @@
+{
+  "name": "canvas-crawler",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Add bundler (Vite/Rollup) in Phase 1'",
+    "build": "echo 'Build script TBD in Phase 1'"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
