@@ -1,11 +1,15 @@
 // Canvas Ghost-Tab Scraper Service Worker
 // Handles startup, auth probe, crawl orchestration, and background tasks
 
+import { authManager } from './authManager';
+import { configManager } from './configManager';
+
 interface CrawlState {
   isAuthenticated: boolean;
   lastCrawl: number | null;
   currentTask: string | null;
   errorCount: number;
+  authenticatedHost: string | null;
 }
 
 class CanvasServiceWorker {
@@ -13,7 +17,8 @@ class CanvasServiceWorker {
     isAuthenticated: false,
     lastCrawl: null,
     currentTask: null,
-    errorCount: 0
+    errorCount: 0,
+    authenticatedHost: null
   };
 
   constructor() {
@@ -49,47 +54,33 @@ class CanvasServiceWorker {
     try {
       this.state.currentTask = 'auth-probe';
       
-      // Try to fetch Canvas dashboard with credentials
-      const response = await fetch('https://canvas.instructure.com/', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-        }
-      });
-
-      if (response.ok && response.url.includes('canvas')) {
-        this.state.isAuthenticated = true;
-        console.log('[ServiceWorker] User authenticated with Canvas');
+      // Wait for config to load
+      while (!configManager.isConfigLoaded()) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      // Use the enhanced auth manager
+      const authResult = await authManager.performAuthProbe();
+      
+      this.state.isAuthenticated = authResult.isAuthenticated;
+      this.state.authenticatedHost = authResult.isAuthenticated ? authResult.host : null;
+      
+      if (authResult.isAuthenticated) {
+        console.log('[ServiceWorker] User authenticated with Canvas on:', authResult.host);
         await this.startCrawl();
       } else {
-        this.state.isAuthenticated = false;
-        console.log('[ServiceWorker] User not authenticated');
-        await this.promptForLogin();
+        console.log('[ServiceWorker] User not authenticated, prompting for login');
+        await authManager.promptForLogin();
       }
-    } catch (error) {
-      console.error('[ServiceWorker] Auth probe failed:', error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('[ServiceWorker] Auth probe failed:', errorMessage);
       this.state.isAuthenticated = false;
-      await this.promptForLogin();
+      this.state.authenticatedHost = null;
+      await authManager.promptForLogin();
     } finally {
       this.state.currentTask = null;
     }
-  }
-
-  private async promptForLogin(): Promise<void> {
-    // Show notification to user
-    await chrome.notifications.create({
-      type: 'basic',
-      iconUrl: 'icons/icon48.png',
-      title: 'Canvas Scraper',
-      message: 'Please log in to Canvas to enable data crawling'
-    });
-
-    // Open login tab
-    await chrome.tabs.create({
-      url: 'https://canvas.instructure.com/login',
-      active: false
-    });
   }
 
   private async startCrawl(): Promise<void> {
@@ -116,16 +107,32 @@ class CanvasServiceWorker {
         
         case 'AUTH_CHECK':
           await this.performAuthProbe();
-          sendResponse({ isAuthenticated: this.state.isAuthenticated });
+          sendResponse({ 
+            isAuthenticated: this.state.isAuthenticated,
+            host: this.state.authenticatedHost
+          });
+          break;
+        
+        case 'LOGIN_SUCCESS':
+          console.log('[ServiceWorker] Login success detected, starting crawl...');
+          await this.performAuthProbe();
+          sendResponse({ success: true });
+          break;
+        
+        case 'CONFIG_UPDATED':
+          console.log('[ServiceWorker] Configuration updated, reloading config...');
+          await configManager.loadConfig();
+          sendResponse({ success: true });
           break;
         
         default:
           console.warn('[ServiceWorker] Unknown message type:', message.type);
           sendResponse({ error: 'Unknown message type' });
       }
-    } catch (error) {
-      console.error('[ServiceWorker] Message handling error:', error);
-      sendResponse({ error: error.message });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('[ServiceWorker] Message handling error:', errorMessage);
+      sendResponse({ error: errorMessage });
     }
   }
 
@@ -140,10 +147,33 @@ class CanvasServiceWorker {
 // Initialize service worker
 const serviceWorker = new CanvasServiceWorker();
 
-// Set up periodic sync alarm (hourly)
-chrome.alarms.create('periodic-sync', {
-  delayInMinutes: 1, // First run after 1 minute
-  periodInMinutes: 60 // Then every hour
-});
+// Set up periodic sync alarm based on config
+const setupAlarms = async () => {
+  // Wait for config to load
+  while (!configManager.isConfigLoaded()) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
+  const settings = configManager.getSettings();
+  
+  // Clear existing alarms
+  await chrome.alarms.clearAll();
+  
+  // Set up alarm based on sync frequency
+  if (settings.syncFrequency === 'hourly') {
+    chrome.alarms.create('periodic-sync', {
+      delayInMinutes: 1, // First run after 1 minute
+      periodInMinutes: 60 // Then every hour
+    });
+  } else if (settings.syncFrequency === 'daily') {
+    chrome.alarms.create('periodic-sync', {
+      delayInMinutes: 1, // First run after 1 minute
+      periodInMinutes: 1440 // Then every day
+    });
+  }
+  // For 'startup-only' and 'manual', no alarms needed
+};
+
+setupAlarms();
 
 export {};

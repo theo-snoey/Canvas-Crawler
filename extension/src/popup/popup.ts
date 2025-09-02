@@ -6,6 +6,7 @@ interface ExtensionState {
   lastCrawl: number | null;
   currentTask: string | null;
   errorCount: number;
+  authenticatedHost: string | null;
 }
 
 class PopupController {
@@ -13,7 +14,8 @@ class PopupController {
     isAuthenticated: false,
     lastCrawl: null,
     currentTask: null,
-    errorCount: 0
+    errorCount: 0,
+    authenticatedHost: null
   };
 
   constructor() {
@@ -48,8 +50,13 @@ class PopupController {
     // Update authentication status
     const authStatus = document.getElementById('auth-status');
     if (authStatus) {
-      authStatus.textContent = this.state.isAuthenticated ? 'Authenticated' : 'Not Authenticated';
-      authStatus.className = `status-value ${this.state.isAuthenticated ? 'authenticated' : 'not-authenticated'}`;
+      if (this.state.isAuthenticated) {
+        authStatus.textContent = `Authenticated (${this.state.authenticatedHost || 'unknown'})`;
+        authStatus.className = 'status-value authenticated';
+      } else {
+        authStatus.textContent = 'Not Authenticated';
+        authStatus.className = 'status-value not-authenticated';
+      }
     }
 
     // Update last sync time
@@ -112,7 +119,8 @@ class PopupController {
       
       if (response) {
         this.state.isAuthenticated = response.isAuthenticated;
-        console.log('[Popup] Auth check result:', response.isAuthenticated);
+        this.state.authenticatedHost = response.host || null;
+        console.log('[Popup] Auth check result:', response);
         this.updateUI();
       }
     } catch (error) {
