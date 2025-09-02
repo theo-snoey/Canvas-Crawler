@@ -4,9 +4,9 @@
     "https://canvas.yourdomain.edu"
   ],
   "settings": {
-    "syncFrequency": "hourly",
+    "syncFrequency": "startup-only",
     "maxConcurrentFetches": 6,
     "maxConcurrentGhostTabs": 2,
-    "fileExtraction": "metadata-only"
+    "fileExtraction": "text-extraction"
   }
 }

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Scraper Options</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f8f9fa;
+      color: #2d3b45;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e1e5e9;
+    }
+    
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      color: #6b7780;
+      margin: 0;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e1e5e9;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #2d3b45;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #2d3b45;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e1e5e9;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #008ee2;
+      box-shadow: 0 0 0 2px rgba(0, 142, 226, 0.2);
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e1e5e9;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .form-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 8px 12px;
+      border: 1px solid #e1e5e9;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6b7780;
+      margin-top: 4px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+      background: #008ee2;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0073b8;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #2d3b45;
+      border: 1px solid #e1e5e9;
+    }
+    
+    .btn-secondary:hover {
+      background: #f8f9fa;
+    }
+    
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="title">Canvas Scraper Options</h1>
+    <p class="subtitle">Configure your Canvas crawling settings</p>
+  </div>
+  
+  <div id="status" class="status" style="display: none;"></div>
+  
+  <div class="section">
+    <h2 class="section-title">Canvas Hosts</h2>
+    <div class="form-group">
+      <label class="form-label" for="canvas-hosts">Canvas Domain URLs</label>
+      <textarea 
+        id="canvas-hosts" 
+        class="form-textarea" 
+        placeholder="https://youruniversity.instructure.com&#10;https://canvas.yourdomain.edu"
+      ></textarea>
+      <div class="help-text">Enter one Canvas URL per line. These are the domains where your courses are hosted.</div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2 class="section-title">Sync Settings</h2>
+    <div class="form-group">
+      <label class="form-label" for="sync-frequency">Sync Frequency</label>
+      <select id="sync-frequency" class="form-select">
+        <option value="startup-only">Startup Only</option>
+        <option value="hourly">Hourly</option>
+        <option value="daily">Daily</option>
+        <option value="manual">Manual Only</option>
+      </select>
+      <div class="help-text">How often should the extension check for new content?</div>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="max-fetches">Max Concurrent Fetches</label>
+      <input type="number" id="max-fetches" class="form-input" min="1" max="10" value="6">
+      <div class="help-text">Number of simultaneous network requests (1-10). Higher = faster but more server load.</div>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="max-ghost-tabs">Max Ghost Tabs</label>
+      <input type="number" id="max-ghost-tabs" class="form-input" min="1" max="3" value="2">
+      <div class="help-text">Number of background tabs for complex pages (1-3). Higher = faster but more memory usage.</div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2 class="section-title">File Processing</h2>
+    <div class="form-group">
+      <label class="form-label" for="file-extraction">File Extraction Mode</label>
+      <select id="file-extraction" class="form-select">
+        <option value="metadata-only">Metadata Only</option>
+        <option value="text-extraction">Text Extraction</option>
+        <option value="on-demand">On Demand</option>
+      </select>
+      <div class="help-text">How to handle PDFs and images. Text extraction makes files searchable but takes longer.</div>
+    </div>
+  </div>
+  
+  <div class="actions">
+    <button class="btn btn-secondary" id="reset-defaults">Reset to Defaults</button>
+    <button class="btn btn-primary" id="save-options">Save Options</button>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>
