@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas Scraper Status</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 16px; background: #f8f9fa; }
+    h1 { margin: 0 0 16px; font-size: 20px; color: #2c3e50; }
+    .card { background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .grid > div { background: #f1f3f5; border-radius: 6px; padding: 8px; text-align: center; }
+    .grid b { display: block; color: #495057; font-size: 12px; margin-bottom: 6px; }
+    .controls { display: flex; gap: 8px; margin-bottom: 12px; }
+    button { padding: 8px 12px; border: none; border-radius: 6px; background: #007bff; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .err { background: #fff; border-left: 3px solid #dc3545; padding: 8px 12px; border-radius: 4px; margin-bottom: 8px; }
+    .row { font-size: 12px; color: #495057; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 11px; color: #6c757d; }
+    .red { color: #c92a2a; }
+  </style>
+</head>
+<body>
+  <h1>Canvas Scraper — Status</h1>
+  <div class="controls">
+    <button id="rescanBtn">Manual Rescan</button>
+  </div>
+
+  <div class="card">
+    <h3>Queue</h3>
+    <div id="queue">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h3>Current Session</h3>
+    <div id="session">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h3>Storage</h3>
+    <div id="storage">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h3>Recent Errors</h3>
+    <div id="errors">Loading…</div>
+  </div>
+
+  <div class="card">
+    <h3>Courses</h3>
+    <div id="courses">Loading…</div>
+  </div>
+
+  <script type="module" src="status.js"></script>
+</body>
+</html>
+
+

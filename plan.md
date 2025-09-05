@@ -1,67 +1,74 @@
-## Implementation Checklist (Sequential)
+# Canvas Scraper Implementation Plan
 
-Use these steps in order. Each step has clear outcomes so work can be verified before moving on.
+## Overview
+This document outlines the step-by-step implementation plan for the Canvas Ghost-Tab Scraper Chrome extension. Each phase builds upon the previous one, with clear acceptance criteria for completion.
 
-### Phase 0 – Project bootstrap
-- [ ] Create repository and basic folder layout (`extension/`, `docs/`, `fixtures/`).
-- [ ] Choose Canvas host(s) and record in config.
-- [ ] Decide on initial settings: sync frequency, ghost‑tab concurrency, file extraction mode.
+## Phase Status
 
-### Phase 1 – MV3 scaffold
-- [ ] Create `manifest.json` with required `permissions` and `host_permissions`.
-- [ ] Add service worker (`src/background/serviceWorker.ts`).
-- [ ] Add minimal popup (`src/popup`) and options page (`src/options`).
-- [ ] Wire build tooling (Vite/Rollup/ESBuild) and dev reload.
-- [ ] Acceptance: extension installs and background logs hello world.
+### Phase 0 – Project Setup ✅
+- [x] Repository initialization and basic structure.
+- [x] Documentation (README, setup guide, architecture overview).
+- [x] Configuration templates and examples.
+- [x] Acceptance: project structure exists, can clone and run basic setup.
 
-### Phase 2 – Auth probe and login flow
-- [ ] Implement startup listener (`onStartup`, `onInstalled`).
-- [ ] Implement auth probe via `fetch` to Canvas root with `credentials: 'include'`.
-- [ ] If unauthenticated, show notification and open pinned login tab; listen for dashboard detection.
-- [ ] Acceptance: after manual login, crawler resumes automatically.
+### Phase 1 – Extension Foundation ✅
+- [x] Chrome extension MV3 manifest with permissions and host permissions.
+- [x] Service worker with basic startup and message handling.
+- [x] Content script for DOM interaction.
+- [x] Popup UI with status display and basic controls.
+- [x] Options page for configuration management.
+- [x] Build system with Vite and TypeScript.
+- [x] Acceptance: extension loads in Chrome, shows popup, handles basic messages.
 
-### Phase 3 – Storage layer foundation
-- [ ] Wrapper for `chrome.storage.local` with schema versioning and migrations.
-- [ ] `IndexedDB` setup with stores: `htmlSnapshots`, `structured`, `blobs`, `extractedText`.
-- [ ] Utility for content hashing and compression (e.g., `pako`).
-- [ ] Acceptance: can write/read large payloads and migrate schema v0 → v1.
+### Phase 2 – Enhanced Auth Probe and Login Flow ✅
+- [x] Config manager for Canvas hosts and settings persistence.
+- [x] Auth manager with dual approach (API check + page content check).
+- [x] Login detection and automatic crawl resume.
+- [x] Enhanced error handling and fallback strategies.
+- [x] Acceptance: detects authentication status reliably, prompts for login when needed.
 
-### Phase 4 – Crawl queue and scheduler
-- [ ] Implement prioritized work queue with persistence (resume after restart).
-- [ ] Concurrency controls (e.g., 4–6 tasks, 1–2 ghost tabs limit).
-- [ ] Retry with exponential backoff and jitter; 429 handling.
-- [ ] `chrome.alarms` periodic wake (e.g., hourly).
-- [ ] Acceptance: queue processes mock tasks reliably across restarts.
+### Phase 3 – Storage layer foundation ✅
+- [x] Wrapper for `chrome.storage.local` with schema versioning and migrations.
+- [x] `IndexedDB` setup with stores: `htmlSnapshots`, `structured`, `blobs`, `extractedText`.
+- [x] Utility for content hashing and compression (e.g., `pako`).
+- [x] Acceptance: can write/read large payloads and migrate schema v0 → v1.
+
+### Phase 4 – Crawl queue and scheduler ✅
+- [x] Implement prioritized work queue with persistence (resume after restart).
+- [x] Concurrency controls (e.g., 4–6 tasks, 1–2 ghost tabs limit).
+- [x] Retry with exponential backoff and jitter; 429 handling.
+- [x] `chrome.alarms` periodic wake (e.g., hourly).
+- [x] Acceptance: queue processes mock tasks reliably across restarts.
 
 ### Phase 5 – Fetch‑first page loader
-- [ ] Network `fetch` helper with cookies, redirects, and error normalization.
-- [ ] Conditional requests with ETag/Last‑Modified; local cache integration.
-- [ ] HTML parsing with `DOMParser` and sanitization (strip scripts/styles).
-- [ ] Acceptance: can fetch and parse dashboard HTML into a DOM.
+- [x] Network `fetch` helper with cookies, redirects, and error normalization.
+- [x] Conditional requests with ETag/Last‑Modified; local cache integration.
+- [x] HTML parsing with `DOMParser` and sanitization (strip scripts/styles).
+- [x] Acceptance: can fetch and parse dashboard HTML into a DOM.
 
 ### Phase 6 – Ghost‑tab subsystem
-- [ ] Manager to create minimized/inactive tabs and inject content scripts.
-- [ ] Messaging protocol (request → scrape → response) with timeouts and aborts.
-- [ ] Page‑ready detector and UI automation helpers (expanders, pagination, lazy loads).
-- [ ] Acceptance: can open a course page in a background tab, expand content, and return HTML.
+- [x] Manager to create minimized/inactive tabs and inject content scripts.
+- [x] Messaging protocol (request → scrape → response) with timeouts and aborts.
+- [x] Page‑ready detector and UI automation helpers (expanders, pagination, lazy loads).
+- [x] Acceptance: can open a course page in a background tab, expand content, and return HTML.
 
-### Phase 7 – Course discovery
-- [ ] Parser: dashboard → list of courses (id, name, code, URL).
-- [ ] Store `StudentIndex` and per‑course index shell.
-- [ ] Acceptance: course list persists and dedupes across runs.
+### Phase 7 – Course discovery ✅
+- [x] Parser: dashboard → list of courses (id, name, code, URL).
+- [x] Store `StudentIndex` and per‑course index shell.
+- [x] Acceptance: course list persists and dedupes across runs.
 
-### Phase 8 – Section list crawlers
-- [ ] Announcements list parser (fetch‑first, fallback to ghost tab if needed).
-- [ ] Assignments list parser.
-- [ ] Discussions list parser (handles pagination).
-- [ ] Pages list parser.
-- [ ] Files metadata list parser (no downloads yet).
-- [ ] Quizzes list parser (metadata only).
-- [ ] Modules list parser.
-- [ ] Grades overview scraper (metadata and expanders where visible).
-- [ ] People roster scraper.
-- [ ] Syllabus page scraper.
-- [ ] Acceptance: for a test course, all lists populate with stable IDs and URLs.
+### Phase 8 – Section list crawlers ✅
+- [x] Announcements list parser (fetch‑first, fallback to ghost tab if needed).
+- [x] Assignments list parser.
+- [x] Discussions list parser (handles pagination).
+- [x] Pages list parser.
+- [x] Files metadata list parser (no downloads yet).
+- [x] Quizzes list parser (metadata only).
+- [x] Modules list parser.
+- [x] Grades overview scraper (metadata and expanders where visible).
+- [x] People roster scraper.
+- [x] Syllabus page scraper.
+- [x] Acceptance: for a test course, all lists populate with stable IDs and URLs.
 
 ### Phase 9 – Detail page crawlers
 - [ ] Announcements detail (full HTML, attachments, comments).
@@ -74,18 +81,18 @@ Use these steps in order. Each step has clear outcomes so work can be verified b
 - [ ] Grades detail (per‑assignment comments/feedback where visible).
 - [ ] Acceptance: all detail records tie back to list items by `(courseId, collection, itemId)`.
 
-### Phase 10 – Files pipeline
-- [ ] Add file download worker with concurrency limits and retry.
-- [ ] PDF.js integration to extract text from PDFs into `extractedText`.
-- [ ] Tesseract.js worker for image OCR (configurable, off by default).
-- [ ] Blob de‑duplication by content hash; optional storage of bytes vs text only.
-- [ ] Acceptance: sample PDF and image produce stable extracted text entries.
+### Phase 10 – Files pipeline ✅
+- [x] Add file download worker with concurrency limits and retry.
+- [x] PDF.js integration to extract text from PDFs into `extractedText`.
+- [x] Tesseract.js worker for image OCR (configurable, off by default).
+- [x] Blob de‑duplication by content hash; optional storage of bytes vs text only.
+- [x] Acceptance: sample PDF and image produce stable extracted text entries.
 
-### Phase 11 – Incremental sync
-- [ ] Per‑URL ETag/Last‑Modified storage and conditional requests.
-- [ ] Normalized HTML hashing to skip unmodified parses.
-- [ ] Targeted recrawl planner using change signals from lists.
-- [ ] Acceptance: subsequent runs are significantly faster; unchanged items are skipped.
+### Phase 11 – Incremental sync ✅
+- [x] Per‑URL ETag/Last‑Modified storage and conditional requests.
+- [x] Normalized HTML hashing to skip unmodified parses.
+- [x] Targeted recrawl planner using change signals from lists.
+- [x] Acceptance: subsequent runs are significantly faster; unchanged items are skipped.
 
 ### Phase 12 – Status UI
 - [ ] Extension page: queue status, recent changes, error log, manual rescan.
@@ -117,9 +124,14 @@ Use these steps in order. Each step has clear outcomes so work can be verified b
 - [ ] Acceptance: installable production CRX/zip with documented config.
 
 ### Phase 17 – Documentation and handover
-- [ ] `docs/` with architecture, data model, and operations (sync, purge, backup).
-- [ ] User guide for first‑run login and permissions.
-- [ ] Developer guide for extending parsers and adding institutions.
-- [ ] Acceptance: new developer can set up and run the project in under 30 minutes.
+- [ ] User guide with screenshots and troubleshooting.
+- [ ] Developer guide for extending parsers and adding new Canvas features.
+- [ ] Performance tuning guide and monitoring recommendations.
+- [ ] Acceptance: new developer can understand architecture and add features.
+
+## Notes
+- Each phase should be tested thoroughly before moving to the next.
+- Phases can be worked on in parallel where dependencies allow.
+- Regular commits and documentation updates throughout development.
 
 

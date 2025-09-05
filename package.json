@@ -16,5 +16,8 @@
     "@types/chrome": "^0.0.254",
     "esbuild": "^0.19.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "pako": "^2.1.0",
+    "idb": "^7.0.0"
+  }
 }

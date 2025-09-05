@@ -12,6 +12,8 @@ npm run build
 echo "Copying HTML files and manifest..."
 cp extension/src/popup/popup.html extension/dist/popup/
 cp extension/src/options/options.html extension/dist/options/
+mkdir -p extension/dist/status
+cp extension/src/status/status.html extension/dist/status/
 cp extension/manifest.json extension/dist/
 
 # Create icons directory and PNG icons

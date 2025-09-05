@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Canvas Ghost-Tab Scraper",
-  "version": "0.0.1",
+  "name": "Canvas Ghost-Tab Scraper v2",
+  "version": "0.0.3",
   "description": "Local-first Canvas data crawler using authenticated fetches and background tabs",
   
   "permissions": [
@@ -17,13 +17,16 @@
   
   "host_permissions": [
     "https://*.instructure.com/*",
-    "https://*.canvas.com/*"
+    "https://*.canvas.com/*",
+    "https://*.canvas-user-content.com/*"
   ],
   
   "background": {
     "service_worker": "background/serviceWorker.js",
     "type": "module"
   },
+  
+  "minimum_chrome_version": "88",
   
   "content_scripts": [
     {
@@ -37,19 +40,17 @@
     "default_popup": "popup/popup.html",
     "default_title": "Canvas Scraper"
   },
-  
   "options_page": "options/options.html",
-  
+
+  "web_accessible_resources": [
+    {
+      "resources": ["offscreen/offscreen.html", "status/status.html", "status/status.js"],
+      "matches": ["https://*.instructure.com/*", "https://*.canvas.com/*"]
+    }
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  
-  "web_accessible_resources": [
-    {
-      "resources": ["offscreen/offscreen.html"],
-      "matches": ["https://*.instructure.com/*", "https://*.canvas.com/*"]
-    }
-  ]
+  }
 }

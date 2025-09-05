@@ -11,12 +11,15 @@ export default defineConfig({
         
         // Content script
         'content/contentScript': resolve(__dirname, 'extension/src/content/contentScript.ts'),
+        'content/ghostTabHandler': resolve(__dirname, 'extension/src/content/ghostTabHandler.ts'),
         
         // Popup
         'popup/popup': resolve(__dirname, 'extension/src/popup/popup.ts'),
         
         // Options
-        'options/options': resolve(__dirname, 'extension/src/options/options.ts')
+        'options/options': resolve(__dirname, 'extension/src/options/options.ts'),
+        // Status UI
+        'status/status': resolve(__dirname, 'extension/src/status/status.ts')
       },
       output: {
         entryFileNames: '[name].js',

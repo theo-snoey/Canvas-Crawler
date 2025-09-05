@@ -1,147 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas Scraper</title>
-  <style>
-    body {
-      width: 320px;
-      min-height: 200px;
-      margin: 0;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8f9fa;
-    }
-    
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #e1e5e9;
-    }
-    
-    .logo {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-      background: #008ee2;
-      border-radius: 4px;
-    }
-    
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #2d3b45;
-      margin: 0;
-    }
-    
-    .status {
-      background: white;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 1px solid #e1e5e9;
-    }
-    
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    
-    .status-row:last-child {
-      margin-bottom: 0;
-    }
-    
-    .status-label {
-      font-size: 14px;
-      color: #6b7780;
-    }
-    
-    .status-value {
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
-    .status-value.authenticated {
-      color: #008ee2;
-    }
-    
-    .status-value.not-authenticated {
-      color: #d12f19;
-    }
-    
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .btn-primary {
-      background: #008ee2;
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: #0073b8;
-    }
-    
-    .btn-secondary {
-      background: white;
-      color: #2d3b45;
-      border: 1px solid #e1e5e9;
-    }
-    
-    .btn-secondary:hover {
-      background: #f8f9fa;
-    }
-    
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Scraper</title>
+    <style>
+        body {
+            width: 450px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            background: #f8f9fa;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .status {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .status.authenticated {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.not-authenticated {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .storage-section, .queue-section, .session-section {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            margin: 0 0 12px 0;
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #495057;
+            font-size: 12px;
+        }
+
+        .session-info {
+            font-size: 14px;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .session-id {
+            font-weight: 600;
+            color: #495057;
+            font-size: 12px;
+        }
+
+        .session-status {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .session-status.running {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .session-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .session-status.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .session-status.cancelled {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .session-details {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .session-details > div {
+            margin-bottom: 4px;
+        }
+
+        .no-session {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .button-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .button-section.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #545b62;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #1e7e34;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover:not(:disabled) {
+            background: #138496;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <div class="logo"></div>
-    <h1 class="title">Canvas Scraper</h1>
-  </div>
-  
-  <div class="status">
-    <div class="status-row">
-      <span class="status-label">Status:</span>
-      <span class="status-value" id="auth-status">Checking...</span>
+    <div class="header">
+        <h1>Canvas Scraper</h1>
     </div>
-    <div class="status-row">
-      <span class="status-label">Last Sync:</span>
-      <span class="status-value" id="last-sync">Never</span>
+
+    <div class="status-section">
+        <div class="status-item">
+            <span class="status-label">Status:</span>
+            <span id="status" class="status">Loading...</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Last Sync:</span>
+            <span id="lastSync">Loading...</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Current Task:</span>
+            <span id="currentTask">Loading...</span>
+        </div>
     </div>
-    <div class="status-row">
-      <span class="status-label">Current Task:</span>
-      <span class="status-value" id="current-task">Idle</span>
+
+    <div class="storage-section">
+        <h3 class="section-title">Storage Statistics</h3>
+        <div id="storageStats">
+            <div style="text-align: center; color: #6c757d; font-size: 14px;">
+                Loading storage stats...
+            </div>
+        </div>
     </div>
-  </div>
-  
-  <div class="actions">
-    <button class="btn btn-primary" id="start-crawl">Start Crawl</button>
-    <button class="btn btn-secondary" id="check-auth">Check Auth</button>
-    <button class="btn btn-secondary" id="open-options">Options</button>
-  </div>
-  
-  <script src="popup.js"></script>
+
+    <div class="queue-section">
+        <h3 class="section-title">Queue Statistics</h3>
+        <div id="queueStats">
+            <div style="text-align: center; color: #6c757d; font-size: 14px;">
+                Loading queue stats...
+            </div>
+        </div>
+    </div>
+
+    <div class="session-section">
+        <h3 class="section-title">Current Session</h3>
+        <div id="currentSession">
+            <div style="text-align: center; color: #6c757d; font-size: 14px;">
+                Loading session info...
+            </div>
+        </div>
+    </div>
+
+    <div class="button-section">
+        <button id="checkAuth" class="btn-primary">Check Auth</button>
+        <button id="startCrawl" class="btn-success">Start Crawl</button>
+    </div>
+
+    <div class="button-section">
+        <button id="testQueue" class="btn-info">Test Queue</button>
+        <button id="testPageLoader" class="btn-info">Test Page Loader</button>
+        <button id="testGhostTab" class="btn-info">Test Ghost Tab</button>
+        <button id="testCourseDiscovery" class="btn-info">Test Course Discovery</button>
+        <button id="testSectionCrawlers" class="btn-info">Test Section Crawlers</button>
+        <button id="testAllSections" class="btn-info">Test All Sections</button>
+        <button id="testSectionParsing" class="btn-info">Test Section Parsing</button>
+        <button id="viewAllData" class="btn-success">View All Data</button>
+        <button id="showContentCounts" class="btn-success">Show Content Counts</button>
+        <button id="debugHtmlPatterns" class="btn-warning">Debug HTML Patterns</button>
+        <button id="testDetailCrawlers" class="btn-success">Test Detail Crawlers</button>
+        <button id="testSingleAssignment" class="btn-info">Test Single Assignment</button>
+        <button id="testAllAssignments" class="btn-info">Test All Assignments</button>
+        <button id="testQuizDetails" class="btn-info">Test Quiz Details</button>
+        <button id="testFilesPipeline" class="btn-success">Test Files Pipeline</button>
+        <button id="testIncrementalSync" class="btn-success">Test Incremental Sync</button>
+        <button id="cancelCrawl" class="btn-warning">Cancel Crawl</button>
+        <button id="runAllTests" class="btn-primary">Run All Tests</button>
+    </div>
+
+    <div class="button-section">
+        <button id="clearStorage" class="btn-danger">Clear Storage</button>
+        <button id="clearQueue" class="btn-danger">Clear Queue</button>
+    </div>
+
+    <div class="button-section full-width">
+        <button id="options" class="btn-secondary">Options</button>
+        <button id="openStatus" class="btn-secondary">Open Status Page</button>
+    </div>
+
+    <div class="footer">
+        <p>Canvas Ghost-Tab Scraper v0.0.1</p>
+    </div>
+
+    <script type="module" src="popup.js"></script>
 </body>
 </html>
